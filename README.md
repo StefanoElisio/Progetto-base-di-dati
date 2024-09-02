@@ -36,17 +36,17 @@
 
 ### Traduzione del modello ER nel modello relazionale
 
-- **Ordinante**(**<ins>ID</ins>**, username, nome, cognome)
-- **Tecnico**(**<ins>ID</ins>**, username, nome, cognome)
-- **Prodotto_candidato**(**<ins>ID</ins>**, numero_seriale, nome, nome_produttore, prezzo, url, note)
-- **Categoria**(**<ins>ID</ins>**, nome)
-- **Richista_acquisto**(**<ins>ID</ins>**, **<ins>ID_ordinante</ins>**, **<ins>ID_tecnico</ins>**, timestamp, note, esito)
-- **Caratteristica**(**<ins>ID</ins>**, **<ins>ID_categoria</ins>**, nome)
-- **Valutazione**(**<ins>ID</ins>**, **<ins>ID_prodotto_candidato</ins>**, **<ins>ID_ordinante</ins>**, decisione, motivazione)
-- **Tecnico_prodotti**(**<ins>ID</ins>**, **<ins>ID_tecnico</ins>**, **<ins>ID_prodotto</ins>**)
-- **Richiesta_prodotti**(**<ins>ID</ins>**, **<ins>ID_richiesta_acquisto</ins>**, **<ins>ID_prodotto</ins>**)
-- **Richiesta_categorie**(**<ins>ID</ins>**, **<ins>ID_richiesta_acquisto</ins>**, **<ins>ID_categoria</ins>**)
-- **Richiesta_caratteristiche**(**<ins>ID</ins>**, **<ins>ID_richiesta_acquisto</ins>**, **<ins>ID_caratteristica</ins>**, valore)
+* **Ordinante**(**<ins>ID</ins>**, username, nome, cognome)
+* **Tecnico**(**<ins>ID</ins>**, username, nome, cognome)
+* **Prodotto_candidato**(**<ins>ID</ins>**, numero_seriale, nome, nome_produttore, prezzo, url, note)
+* **Categoria**(**<ins>ID</ins>**, nome)
+* **Richista_acquisto**(**<ins>ID</ins>**, **<ins>ID_ordinante</ins>**, **<ins>ID_tecnico</ins>**, timestamp, note, esito)
+* **Caratteristica**(**<ins>ID</ins>**, **<ins>ID_categoria</ins>**, nome)
+* **Valutazione**(**<ins>ID</ins>**, **<ins>ID_prodotto_candidato</ins>**, **<ins>ID_ordinante</ins>**, decisione, motivazione)
+* **Tecnico_prodotti**(**<ins>ID</ins>**, **<ins>ID_tecnico</ins>**, **<ins>ID_prodotto</ins>**)
+* **Richiesta_prodotti**(**<ins>ID</ins>**, **<ins>ID_richiesta_acquisto</ins>**, **<ins>ID_prodotto</ins>**)
+* **Richiesta_categorie**(**<ins>ID</ins>**, **<ins>ID_richiesta_acquisto</ins>**, **<ins>ID_categoria</ins>**)
+* **Richiesta_caratteristiche**(**<ins>ID</ins>**, **<ins>ID_richiesta_acquisto</ins>**, **<ins>ID_caratteristica</ins>**, valore)
 
 - **<ins>ID</ins>** è la chiave primaria
 - **<ins>ID_entità</ins>** è la chiave esterna
