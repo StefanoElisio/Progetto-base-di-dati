@@ -32,7 +32,7 @@
 
 ### Ristrutturazione ed ottimizzazione del modello ER
 
-<img src="assets\ER_concettuale.jpg">
+<img src="assets\ER_ristrutturato.jpg">
 
 - Discutete le scelte effettuate, ad esempio nell'eliminare una generalizzazione o nello scindere un'entità.
 
