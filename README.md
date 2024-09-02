@@ -14,8 +14,9 @@
 4. In caso di ordine accettato il personale tecnico procederà all'aquisto del prodotto e alla consegna
 5. Una volta che il prodotto viene consegnato l'ordinate chiuderà la relativa richiesta d'acquisto indicando se il prodotto è stato accettato, respinto perché non conforme oppure respinto perché non funzionante
 
-## Scelte progettuali 
+### Scelte progettuali 
 
+- discutere le scelte progettuali e disambuguare eventuali elementi ambugui
 
 ## Progettazione concettuale
 
@@ -31,7 +32,7 @@
 
 ### Ristrutturazione ed ottimizzazione del modello ER
 
-- Riportate qui il modello **ER ristrutturato** ed eventualmente ottimizzato. 
+<img src="assets\ER_concettuale.jpg">
 
 - Discutete le scelte effettuate, ad esempio nell'eliminare una generalizzazione o nello scindere un'entità.
 
