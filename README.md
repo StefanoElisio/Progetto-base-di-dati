@@ -19,7 +19,7 @@
 
 ## Progettazione concettuale
 
-<img src="assets/Diagramma ER concettuale" style="margin-left: 13px">
+<img src="assets/ER_concettuale" style="margin-left: 13px">
 
 - Commentate gli elementi non visibili nella figura (ad esempio il contenuto degli attributi composti) nonché le scelte/assunzioni che vi hanno portato a creare determinate strutture, se lo ritenete opportuno.
 
