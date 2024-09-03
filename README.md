@@ -41,7 +41,7 @@
 * **Ordinante**(**<ins>ID</ins>**, username, nome, cognome)
 * **Tecnico**(**<ins>ID</ins>**, username, nome, cognome)
 * **Prodotto_candidato**(**<ins>ID</ins>**, numero_seriale, nome, nome_produttore, prezzo, url, note)
-* **Categoria**(**<ins>ID</ins>**, nome)
+* **Categoria**(**<ins>ID</ins>**,**<ins>ID_padre</ins>** ,nome)
 * **Richista_acquisto**(**<ins>ID</ins>**, **<ins>ID_ordinante</ins>**, **<ins>ID_ordinante</ins>**, **<ins>ID_tecnico</ins>**, tempo, note, esito)
 * **Caratteristica**(**<ins>ID</ins>**, **<ins>ID_categoria</ins>**, nome)
 * **Valutazione**(**<ins>ID</ins>**, **<ins>ID_prodotto_candidato</ins>**, **<ins>ID_ordinante</ins>**, decisione, motivazione)
