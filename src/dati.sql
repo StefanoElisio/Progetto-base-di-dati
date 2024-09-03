@@ -78,6 +78,9 @@ INSERT INTO richiesta_acquisto (ID_ordinante, ID_tecnico, ID_categoria, note, es
 VALUES 
     (1, 3, 6, 'Costo non maggiore di 1000$', 'respinto perché non conforme'),
     (3, 2, 4, NULL, 'respinto perché non funzionante');
+INSERT INTO richiesta_acquisto (ID_ordinante, ID_categoria, note)
+VALUES 
+    (2, 6, 'Costo non maggiore di 1000$');
 
 INSERT INTO caratteristica(ID_categoria, nome)
 VALUES
@@ -91,12 +94,12 @@ VALUES
     (6,'Taglia'),
     (6,'Colore');
 
-INSERT INTO valutazione(ID_prodotto_candidato,ID_ordinante,decisione,motivazione)
+INSERT INTO valutazione(ID_prodotto_candidato,ID_ordinante,ID_richiesta_acquisto,decisione,motivazione)
 VALUES
-    (3, 2, 'rifiutato', 'Il prodotto ha superato il budget'),
-    (2, 1, 'approvato', NULL),
-    (1, 3, 'approvato', NULL),
-    (1, 1, 'rifiutato', 'Il prodotto non soddisfa i requisiti tecnici');
+    (3, 2, 2,'rifiutato', 'Il prodotto ha superato il budget'),
+    (2, 1, 3,'approvato', NULL),
+    (1, 3, 2,'approvato', NULL),
+    (2, 1, 1,'rifiutato', 'Il prodotto non soddisfa i requisiti tecnici');
 
 INSERT INTO tecnico_scelta_prodotto (ID_tecnico, ID_prodotto)
 VALUES
@@ -108,7 +111,7 @@ VALUES
 
 INSERT INTO richiesta_relativo_prodotto(ID_richiesta_acquisto,ID_prodotto)
 VALUES
-    (1,1),
+    (2,1),
     (1,2),
     (2,3),
     (3,2);

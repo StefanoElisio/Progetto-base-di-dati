@@ -58,16 +58,18 @@ CREATE TABLE valutazione (
     ID INT AUTO_INCREMENT PRIMARY KEY,
     ID_prodotto_candidato INT NOT NULL,
     ID_ordinante INT NOT NULL,
-    decisione ENUM('approvato', 'rifiutato') NOT NULL,
-    motivazione TEXT,
+    ID_richiesta_acquisto INT NOT NULL,
+    decisione ENUM('approvato', 'rifiutato') DEFAULT NULL,
+    motivazione TEXT DEFAULT NULL,
+    CONSTRAINT una_valutazione UNIQUE(ID_prodotto_candidato,ID_ordinante,ID_richiesta_acquisto),
     CONSTRAINT valutazione_prodotto FOREIGN KEY (ID_prodotto_candidato) REFERENCES prodotto_candidato(ID) ON UPDATE CASCADE ON DELETE RESTRICT,
     CONSTRAINT valutazione_ordinante FOREIGN KEY (ID_ordinante) REFERENCES ordinante(ID) ON UPDATE CASCADE ON DELETE RESTRICT,
+    CONSTRAINT valutazione_richiesta FOREIGN KEY (ID_richiesta_acquisto) REFERENCES richiesta_acquisto(ID) ON UPDATE CASCADE ON DELETE RESTRICT,
     CONSTRAINT motivazione_consiste CHECK ((
         decisione = 'approvato'
         AND motivazione IS NULL
     ) OR (
         decisione = 'rifiutato'
-        AND motivazione IS NOT NULL
     ))
 );
 CREATE TABLE tecnico_scelta_prodotto (
