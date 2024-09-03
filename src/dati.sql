@@ -8,7 +8,6 @@ TRUNCATE TABLE ordinante;
 TRUNCATE TABLE prodotto_candidato;
 TRUNCATE TABLE richiesta_acquisto;
 TRUNCATE TABLE richiesta_info_caratteristiche;
-TRUNCATE TABLE richiesta_definita_categoria;
 TRUNCATE TABLE richiesta_relativo_prodotto;
 TRUNCATE TABLE tecnico;
 TRUNCATE TABLE tecnico_scelta_prodotto;
@@ -63,20 +62,22 @@ VALUES (
 
 INSERT INTO categoria(nome)
 VALUES
-    ('Elettronica'),
-    ('SmartPhone'), 
-    ('PC portatili'), 
-    ('Abbigliamento'),
-    ('Scarpe'),
-    ('Giubbetti');
+    ('Elettronica'), 
+    ('Abbigliamento');
+INSERT INTO categoria(ID_padre, nome)
+VALUES
+    (1,'SmartPhone'), 
+    (1,'PC portatili'),
+    (2,'Scarpe'),
+    (2,'Giubbetti');
 
-INSERT INTO richiesta_acquisto (ID_ordinante, ID_tecnico, tempo, note, esito)
+INSERT INTO richiesta_acquisto (ID_ordinante, ID_tecnico, ID_categoria, tempo, note, esito)
 VALUES 
-    (1, 1, '2024-06-01 12:34:56', 'Richiesta urgente', 'accettato');
-INSERT INTO richiesta_acquisto (ID, ID_ordinante, ID_tecnico, note, esito)
+    (1, 1, 1, '2024-06-01 12:34:56', 'Richiesta urgente', 'accettato');
+INSERT INTO richiesta_acquisto (ID_ordinante, ID_tecnico, ID_categoria, note, esito)
 VALUES 
-    (2, 1, 3, 'Costo non maggiore di 1000$', 'respinto perché non conforme'),
-    (3, 3, 2, NULL, 'respinto perché non funzionante');
+    (1, 3, 6, 'Costo non maggiore di 1000$', 'respinto perché non conforme'),
+    (3, 2, 3, NULL, 'respinto perché non funzionante');
 
 INSERT INTO caratteristica(ID_categoria, nome)
 VALUES
@@ -111,14 +112,6 @@ VALUES
     (1,2),
     (2,3),
     (3,2);
-
-INSERT INTO richiesta_definita_categoria(ID_richiesta_acquisto,ID_categoria)
-VALUES
-    (1,1),
-    (1,3),
-    (2,4),
-    (3,4),
-    (3,5);
 
 INSERT INTO richiesta_info_caratteristiche(ID_richiesta_acquisto,ID_caratteristica)
 VALUES

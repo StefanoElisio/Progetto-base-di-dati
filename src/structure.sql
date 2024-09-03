@@ -24,21 +24,26 @@ CREATE TABLE prodotto_candidato (
 );
 CREATE TABLE categoria (
     ID INT AUTO_INCREMENT PRIMARY KEY,
-    nome varchar(20) UNIQUE
+    ID_padre INT DEFAULT NULL,
+    nome varchar(20) UNIQUE,
+    CONSTRAINT padre FOREIGN KEY (ID_padre) REFERENCES categoria(ID) ON UPDATE CASCADE ON DELETE CASCADE
 );
 CREATE TABLE richiesta_acquisto (
     ID INT AUTO_INCREMENT PRIMARY KEY,
     ID_ordinante INT NOT NULL,
     ID_tecnico INT NOT NULL,
+    ID_categoria INT NOT NULL,
     tempo TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     note TEXT,
     esito ENUM(
+        'in corso',
         'accettato',
         'respinto perché non conforme',
         'respinto perché non funzionante'
     ) NOT NULL,
     CONSTRAINT richiesta_ordinante FOREIGN KEY (ID_ordinante) REFERENCES ordinante(ID) ON UPDATE CASCADE ON DELETE RESTRICT,
     CONSTRAINT richiesta_tecnico FOREIGN KEY (ID_tecnico) REFERENCES tecnico(ID) ON UPDATE CASCADE ON DELETE RESTRICT,
+    CONSTRAINT richiesta_categoria FOREIGN KEY (ID_categoria) REFERENCES categoria(ID) ON UPDATE CASCADE ON DELETE RESTRICT,
     CONSTRAINT un_ordinante UNIQUE(ID_ordinante, tempo),
     CONSTRAINT un_tecnico UNIQUE(ID_tecnico, tempo)
 );
@@ -57,14 +62,13 @@ CREATE TABLE valutazione (
     motivazione TEXT,
     CONSTRAINT valutazione_prodotto FOREIGN KEY (ID_prodotto_candidato) REFERENCES prodotto_candidato(ID) ON UPDATE CASCADE ON DELETE RESTRICT,
     CONSTRAINT valutazione_ordinante FOREIGN KEY (ID_ordinante) REFERENCES ordinante(ID) ON UPDATE CASCADE ON DELETE RESTRICT,
-    CONSTRAINT approvato CHECK (
+    CONSTRAINT motivazione_consiste CHECK ((
         decisione = 'approvato'
         AND motivazione IS NULL
-    ),
-    CONSTRAINT rifiutato CHECK(
+    ) OR (
         decisione = 'rifiutato'
         AND motivazione IS NOT NULL
-    )
+    ))
 );
 CREATE TABLE tecnico_scelta_prodotto (
     ID INT AUTO_INCREMENT PRIMARY KEY,
@@ -80,14 +84,6 @@ CREATE TABLE richiesta_relativo_prodotto (
     CONSTRAINT richiesta_prodotto_unica UNIQUE (ID_richiesta_acquisto, ID_prodotto),
     CONSTRAINT richiesta_relativa FOREIGN KEY (ID_richiesta_acquisto) REFERENCES richiesta_acquisto(ID) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT prodotto_relativo FOREIGN KEY (ID_prodotto) REFERENCES prodotto_candidato(ID) ON UPDATE CASCADE ON DELETE RESTRICT
-);
-CREATE TABLE richiesta_definita_categoria (
-    ID INT AUTO_INCREMENT PRIMARY KEY,
-    ID_richiesta_acquisto INT NOT NULL,
-    ID_categoria int NOT NULL,
-    CONSTRAINT richiesta_categoria_unica UNIQUE (ID_richiesta_acquisto, ID_categoria),
-    CONSTRAINT richiesta_definita FOREIGN KEY (ID_richiesta_acquisto) REFERENCES richiesta_acquisto(ID) ON UPDATE CASCADE ON DELETE CASCADE,
-    CONSTRAINT categoria_definita FOREIGN KEY (ID_categoria) REFERENCES categoria(ID) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 CREATE TABLE richiesta_info_caratteristiche (
     ID INT AUTO_INCREMENT PRIMARY KEY,
