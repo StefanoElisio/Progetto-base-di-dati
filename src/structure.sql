@@ -1,6 +1,7 @@
 DROP DATABASE IF EXISTS market;
 CREATE DATABASE market;
 USE market;
+
 CREATE TABLE ordinante (
     ID INT AUTO_INCREMENT PRIMARY KEY,
     username varchar(20) UNIQUE,
