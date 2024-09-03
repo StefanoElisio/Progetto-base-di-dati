@@ -45,7 +45,7 @@ BEGIN
     CLOSE cur;
 END $$
 
--- creazione della richiesta
+-- procedura per la creazione della richiesta
 CREATE PROCEDURE insert_richiesta(
     ID_ordinante INTEGER UNSIGNED,
     ID_tecnico INTEGER UNSIGNED,
