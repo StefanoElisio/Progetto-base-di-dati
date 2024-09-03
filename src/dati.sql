@@ -77,16 +77,16 @@ VALUES
 INSERT INTO richiesta_acquisto (ID_ordinante, ID_tecnico, ID_categoria, note, esito)
 VALUES 
     (1, 3, 6, 'Costo non maggiore di 1000$', 'respinto perché non conforme'),
-    (3, 2, 3, NULL, 'respinto perché non funzionante');
+    (3, 2, 4, NULL, 'respinto perché non funzionante');
 
 INSERT INTO caratteristica(ID_categoria, nome)
 VALUES
     (1,'Autonomia'),
-    (2,'Pollici'),
-    (2,'MegaPixel'),
-    (3,'CPU'),
-    (3,'GPU'),
-    (4,'Genere'),
+    (3,'Pollici'),
+    (3,'MegaPixel'),
+    (4,'CPU'),
+    (4,'GPU'),
+    (2,'Genere'),
     (5,'Taglia'),
     (6,'Taglia'),
     (6,'Colore');
@@ -116,11 +116,12 @@ VALUES
 INSERT INTO richiesta_info_caratteristiche(ID_richiesta_acquisto,ID_caratteristica)
 VALUES
     (1,1),
-    (1,3),
-    (2,6);
+    (2,6),
+    (2,8),
+    (3,1);
 INSERT INTO richiesta_info_caratteristiche(ID_richiesta_acquisto,ID_caratteristica,valore)
 VALUES
-    (1,2,'almeno 12'),
-    (3,6,'uomo'),
-    (3,7,'media');
+    (2,9,'BLU'),
+    (3,4,'NVIDIA'),
+    (3,5,'i5core');
 

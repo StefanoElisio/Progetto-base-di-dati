@@ -32,7 +32,7 @@ CREATE TABLE categoria (
 CREATE TABLE richiesta_acquisto (
     ID INT AUTO_INCREMENT PRIMARY KEY,
     ID_ordinante INT NOT NULL,
-    ID_tecnico INT NOT NULL,
+    ID_tecnico INT DEFAULT NULL,
     ID_categoria INT NOT NULL,
     tempo TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     note TEXT,
@@ -41,12 +41,11 @@ CREATE TABLE richiesta_acquisto (
         'accettato',
         'respinto perché non conforme',
         'respinto perché non funzionante'
-    ) NOT NULL,
+    ) NOT NULL DEFAULT 'in corso',
     CONSTRAINT richiesta_ordinante FOREIGN KEY (ID_ordinante) REFERENCES ordinante(ID) ON UPDATE CASCADE ON DELETE RESTRICT,
     CONSTRAINT richiesta_tecnico FOREIGN KEY (ID_tecnico) REFERENCES tecnico(ID) ON UPDATE CASCADE ON DELETE RESTRICT,
     CONSTRAINT richiesta_categoria FOREIGN KEY (ID_categoria) REFERENCES categoria(ID) ON UPDATE CASCADE ON DELETE RESTRICT,
-    CONSTRAINT un_ordinante UNIQUE(ID_ordinante, tempo),
-    CONSTRAINT un_tecnico UNIQUE(ID_tecnico, tempo)
+    CONSTRAINT un_ordinante UNIQUE(ID_ordinante, tempo)
 );
 CREATE TABLE caratteristica (
     ID INT AUTO_INCREMENT PRIMARY KEY,
