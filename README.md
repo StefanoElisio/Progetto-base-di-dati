@@ -74,7 +74,25 @@
 
 ### Implementazione dei vincoli
 
-- Nel caso abbiate individuato dei **vincoli ulteriori** che non sono esprimibili nel DDL, potrete usare questa sezione per discuterne l'implementazione effettiva, ad esempio riportando il codice di procedure o trigger, o dichiarando che dovranno essere implementati all'esterno del DBMS.
+- nella tabella della valutazione sono stati inseriti dei check che impediscono che venga creata o modificata secondo i seguenti vincoli:
+  - se la è rifiutata deve esserci una motivazione inserita e viceversa
+  - se l'ordinazione non è avvenuta il tempo deve essere null e viceversa
+ ```sql
+CONSTRAINT motivazione_consiste CHECK ((
+  decisione = 'approvato'
+  AND motivazione IS NULL
+) OR (
+  decisione = 'rifiutato'
+  AND motivazione IS NOT NULL
+)),
+CONSTRAINT tempo_ordinazione CHECK ((
+  ordinazione = 0
+  AND tempo IS NULL
+) OR (
+  ordinazione = 1
+  AND tempo IS NOT NULL
+))
+```
 
 ### Implementazione funzionalità richieste
 
