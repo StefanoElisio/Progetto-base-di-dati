@@ -44,7 +44,7 @@
 * **Categoria**(**<ins>ID</ins>**,**<ins>ID_padre</ins>** ,nome)
 * **Richista_acquisto**(**<ins>ID</ins>**, **<ins>ID_ordinante</ins>**, **<ins>ID_ordinante</ins>**, **<ins>ID_tecnico</ins>**, tempo, note, esito)
 * **Caratteristica**(**<ins>ID</ins>**, **<ins>ID_categoria</ins>**, nome)
-* **Valutazione**(**<ins>ID</ins>**, **<ins>ID_richista_acquisto</ins>**, **<ins>ID_prodotto_candidato</ins>**, **<ins>ID_ordinante</ins>**, tempo, decisione, motivazione)
+* **Valutazione**(**<ins>ID</ins>**, **<ins>ID_richista_acquisto</ins>**, **<ins>ID_prodotto_candidato</ins>**, **<ins>ID_ordinante</ins>**, tempo, decisione, ordinazione, motivazione)
 * **Tecnico_prodotti**(**<ins>ID</ins>**, **<ins>ID_tecnico</ins>**, **<ins>ID_prodotto</ins>**)
 * **Richiesta_prodotti**(**<ins>ID</ins>**, **<ins>ID_richiesta_acquisto</ins>**, **<ins>ID_prodotto</ins>**)
 * **Richiesta_caratteristiche**(**<ins>ID</ins>**, **<ins>ID_richiesta_acquisto</ins>**, **<ins>ID_caratteristica</ins>**, valore)
