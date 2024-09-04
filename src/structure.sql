@@ -63,7 +63,7 @@ CREATE TABLE valutazione (
     decisione ENUM('approvato', 'rifiutato') DEFAULT NULL,
     ordinazione BIT DEFAULT 0,
     motivazione TEXT DEFAULT NULL,
-    CONSTRAINT una_valutazione UNIQUE(ID_prodotto_candidato,ID_ordinante,ID_richiesta_acquisto),
+    CONSTRAINT una_valutazione UNIQUE(ID_prodotto_candidato,ID_richiesta_acquisto),
     CONSTRAINT valutazione_prodotto FOREIGN KEY (ID_prodotto_candidato) REFERENCES prodotto_candidato(ID) ON UPDATE CASCADE ON DELETE RESTRICT,
     CONSTRAINT valutazione_ordinante FOREIGN KEY (ID_ordinante) REFERENCES ordinante(ID) ON UPDATE CASCADE ON DELETE RESTRICT,
     CONSTRAINT valutazione_richiesta FOREIGN KEY (ID_richiesta_acquisto) REFERENCES richiesta_acquisto(ID) ON UPDATE CASCADE ON DELETE CASCADE,
