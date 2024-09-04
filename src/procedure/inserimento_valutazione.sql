@@ -9,10 +9,22 @@ CREATE PROCEDURE insert_valutazione(
     mot TEXT
 )
 BEGIN
-    IF EXISTS (SELECT * 
+    -- update se esiste la valutazione e non è approvata 
+    IF EXISTS(SELECT ID_val
+        FROM valutazione
+        WHERE ID_prodotto_candidato = ID_prod
+        AND ID_ordinante = ID_ord
+        AND ID_richiesta_acquisto = ID_rc
+        AND decisione IS NULL
+    ) AND de IS NOT NULL THEN
+        UPDATE valutazione
+        SET decisione = de
+        WHERE ID = ID_val;
+    -- insert se non esiste già
+    ELSEIF EXISTS (SELECT * 
         FROM richiesta_relativo_prodotto 
         WHERE ID_richiesta_acquisto = ID_rc
-        AND ID_prodotto = ID_prod
+        AND ID_prodotto_candidato = ID_prod
     ) AND EXISTS (SELECT *
         FROM richiesta_acquisto
         WHERE ID_ordinante = ID_ord

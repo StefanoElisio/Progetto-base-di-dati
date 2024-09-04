@@ -4,11 +4,10 @@ DROP PROCEDURE IF EXISTS set_value_caratteristica;
 
 DELIMITER $$
 -- precedura che crea le caratteristiche per la richiesta e le setta sul valore di default
-CREATE PROCEDURE deafult_caratteristiche()
+CREATE PROCEDURE deafult_caratteristiche(ID_rc INTEGER UNSIGNED)
 BEGIN
     DECLARE done BIT DEFAULT NULL;
     DECLARE ID_car INT;
-    DECLARE ID_rc INT;
     -- Dichiarazione del cursore
     DECLARE cur CURSOR FOR
     WITH RECURSIVE CTE_Categorie AS (
@@ -18,7 +17,7 @@ BEGIN
         WHERE ID = (
 			SELECT ID_categoria
 			FROM richiesta_acquisto ra
-			WHERE ra.ID = LAST_INSERT_ID()
+			WHERE ra.ID = ID_rc
 		)
         UNION ALL
         -- Ricerca dei padri
@@ -31,7 +30,6 @@ BEGIN
     FROM caratteristica car
     JOIN CTE_Categorie cte ON car.ID_categoria = cte.ID;
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
-    SET ID_rc =  LAST_INSERT_ID();
     -- Loop per iterare su ogni caratteristica trovata
     OPEN cur;
     loop_caratteristiche: LOOP
@@ -47,15 +45,17 @@ END $$
 
 -- procedura per la creazione della richiesta
 CREATE PROCEDURE insert_richiesta(
-    ID_ordinante INTEGER UNSIGNED,
-    ID_tecnico INTEGER UNSIGNED,
-    ID_categoria INTEGER UNSIGNED,
-    note TEXT
+    ID_ord INTEGER UNSIGNED,
+    ID_tec INTEGER UNSIGNED,
+    ID_cat INTEGER UNSIGNED,
+    testo TEXT,
+    OUT new_id INTEGER UNSIGNED
 )
 BEGIN
     INSERT INTO richiesta_acquisto(ID_ordinante,ID_categoria,note)
-    VALUES (ID_ordinante,ID_tecnico,ID_categoria,note);
-    CALL deafult_caratteristiche();
+    VALUES (ID_ord,ID_tec,ID_cat,testo);
+    SET new_id = LAST_INSERT_ID();
+    CALL deafult_caratteristiche(new_id);
 END$$
 
 -- procedura per modificare il valore ad una caratteristica di una richiesta

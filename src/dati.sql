@@ -71,6 +71,12 @@ VALUES
     (2,'Scarpe'),
     (2,'Giubbetti');
 
+INSERT INTO richiesta_acquisto (ID_ordinante, ID_tecnico, ID_categoria, note)
+VALUES 
+    (2, 2, 6, 'Costo non maggiore di 1000$');
+INSERT INTO richiesta_acquisto (ID_ordinante, ID_categoria, tempo, note)
+VALUES 
+    (3, 6, '2024-05-01 11:05:12', 'esteticamente piacevole se possibile');
 INSERT INTO richiesta_acquisto (ID_ordinante, ID_tecnico, ID_categoria, tempo, note, esito)
 VALUES 
     (1, 1, 1, '2024-06-01 12:34:56', 'Richiesta urgente', 'accettato');
@@ -78,9 +84,6 @@ INSERT INTO richiesta_acquisto (ID_ordinante, ID_tecnico, ID_categoria, note, es
 VALUES 
     (1, 3, 6, 'Costo non maggiore di 1000$', 'respinto perché non conforme'),
     (3, 2, 4, NULL, 'respinto perché non funzionante');
-INSERT INTO richiesta_acquisto (ID_ordinante, ID_categoria, note)
-VALUES 
-    (2, 6, 'Costo non maggiore di 1000$');
 
 INSERT INTO caratteristica(ID_categoria, nome)
 VALUES
@@ -97,11 +100,15 @@ VALUES
 INSERT INTO valutazione(ID_prodotto_candidato,ID_ordinante,ID_richiesta_acquisto,decisione,motivazione)
 VALUES
     (3, 2, 2,'rifiutato', 'Il prodotto ha superato il budget'),
-    (2, 1, 3,'approvato', NULL),
-    (1, 3, 2,'approvato', NULL),
-    (2, 1, 1,'rifiutato', 'Il prodotto non soddisfa i requisiti tecnici');
+    (2, 1, 3,'approvato', NULL);
+INSERT INTO valutazione(ID_prodotto_candidato,ID_ordinante,ID_richiesta_acquisto,tempo,decisione,ordinazione,motivazione)
+VALUES
+    (1, 3, 2, CURRENT_TIMESTAMP, 'approvato', 1, NULL);
+INSERT INTO valutazione(ID_prodotto_candidato,ID_ordinante,ID_richiesta_acquisto)
+VALUES  
+    (2, 1, 1);
 
-INSERT INTO tecnico_scelta_prodotto (ID_tecnico, ID_prodotto)
+INSERT INTO tecnico_scelta_prodotto (ID_tecnico, ID_prodotto_candidato)
 VALUES
     (1,2),
     (2,1),
@@ -109,7 +116,7 @@ VALUES
     (1,2),
     (3,3);
 
-INSERT INTO richiesta_relativo_prodotto(ID_richiesta_acquisto,ID_prodotto)
+INSERT INTO richiesta_relativo_prodotto(ID_richiesta_acquisto,ID_prodotto_candidato)
 VALUES
     (2,1),
     (1,2),
