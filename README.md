@@ -96,39 +96,396 @@ CONSTRAINT tempo_ordinazione CHECK ((
 
 ### Implementazione funzionalità richieste
 
-- Riportate qui il **codice che implementa tutte le funzionalità richieste**, che si tratti di SQL o di pseudocodice o di entrambi. *Il codice di ciascuna funzionalità dovrà essere preceduto dal suo numero identificativo e dal testo della sua definizione*, come riportato nella specifica.
+- Ogni funzionalità richiesta è implementata tramite una o una serie di stored procedures nella cartella [procedure](src/procedure/)
 
-- Se necessario, riportate anche il codice delle procedure e/o viste di supporto.
+#### [Funzionalità 1](src/procedure/Inserimento_richiesta_d'acquisto.sql)
 
-#### Funzionalità 1
-
-> Definizione come da specifica
+> Inserimento di una richiesta di acquisto (comprensiva di categoria di prodotto, di tutte le caratteristiche richieste per quella categoria di prodotto e delle eventuali note)
 
 ```sql
-CODICE
+DROP PROCEDURE IF EXISTS deafult_caratteristiche;
+DROP PROCEDURE IF EXISTS insert_richiesta;
+DROP PROCEDURE IF EXISTS set_value_caratteristica;
+
+DELIMITER $$
+-- precedura che crea le caratteristiche per la richiesta e le setta sul valore di default
+CREATE PROCEDURE deafult_caratteristiche(ID_rc INTEGER UNSIGNED)
+BEGIN
+    DECLARE done BIT DEFAULT NULL;
+    DECLARE ID_car INT;
+    -- Dichiarazione del cursore
+    DECLARE cur CURSOR FOR
+    WITH RECURSIVE CTE_Categorie AS (
+        -- Seleziona la categoria iniziale
+        SELECT ID, ID_padre
+        FROM categoria
+        WHERE ID = (
+			SELECT ID_categoria
+			FROM richiesta_acquisto ra
+			WHERE ra.ID = ID_rc
+		)
+        UNION ALL
+        -- Ricerca dei padri
+        SELECT c.ID, c.ID_padre
+        FROM categoria c
+        JOIN CTE_Categorie cte ON c.ID = cte.ID_padre
+    )
+    -- selezione caratteristiche relative alle categorie
+    SELECT car.ID
+    FROM caratteristica car
+    JOIN CTE_Categorie cte ON car.ID_categoria = cte.ID;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+    -- Loop per iterare su ogni caratteristica trovata
+    OPEN cur;
+    loop_caratteristiche: LOOP
+        FETCH cur INTO ID_car;
+        IF done IS NOT NULL THEN
+            LEAVE loop_caratteristiche;
+        END IF;
+        INSERT INTO richiesta_info_caratteristiche(ID_richiesta_acquisto,ID_caratteristica)
+        VALUES(ID_rc,ID_car);
+    END LOOP;
+    CLOSE cur;
+END $$
+
+-- procedura per la creazione della richiesta
+CREATE PROCEDURE insert_richiesta(
+    ID_ord INTEGER UNSIGNED,
+    ID_tec INTEGER UNSIGNED,
+    ID_cat INTEGER UNSIGNED,
+    testo TEXT,
+    OUT new_id INTEGER UNSIGNED
+)
+BEGIN
+    INSERT INTO richiesta_acquisto(ID_ordinante,ID_categoria,note)
+    VALUES (ID_ord,ID_tec,ID_cat,testo);
+    SET new_id = LAST_INSERT_ID();
+    CALL deafult_caratteristiche(new_id);
+END$$
+
+-- procedura per modificare il valore ad una caratteristica di una richiesta
+CREATE PROCEDURE set_value_caratteristica(
+    ID_rc INTEGER UNSIGNED,
+    ID_car INTEGER UNSIGNED,
+    val VARCHAR(100)
+)
+BEGIN
+    DECLARE ID_info INT DEFAULT NULL;
+    SET ID_info = (
+        SELECT ID
+        FROM richiesta_info_caratteristiche
+        WHERE ID_richiesta_acquisto = ID_rc
+        AND ID_caratteristica = ID_car
+    );
+    -- inserimento della caratteristica
+    IF ID_info IS NOT NULL THEN
+        UPDATE richiesta_info_caratteristiche
+        SET valore = val
+        WHERE ID = ID_info;
+    END IF;
+END$$
+
+DELIMITER ;
 ```
 
-#### Funzionalità 2
-
-> Definizione come da specifica
+Esempio implementazione
 
 ```sql
-CODICE
+CALL insert_richiesta(2,6,1,'prezzo ragionevole',@ID);
+CALL set_value_caratteristica(@ID,2,'64');
 ```
 
-## Interfaccia verso il database
+#### [Funzionalità 2](src/procedure/set_tecnico.sql)
 
-- Opzionalmente, se avete deciso di realizzare anche una **(semplice) interfaccia** (a linea di comando o grafica) in un linguaggio di programmazione a voi noto (Java, PHP, ...) che manipoli il vostro database , dichiaratelo in questa sezione, elencando
-  le tecnologie utilizzate e le funzionalità invocabili dall'interfaccia. 
+> Associazione di una richiesta di acquisto a un tecnico incaricato
 
-- Il relativo codice sorgente dovrà essere *allegato *alla presente relazione.
+```sql
+DROP PROCEDURE IF EXISTS set_tecnico;
 
------
+DELIMITER $$
+-- precedura che crea le caratteristiche per la richiesta e le setta sul valore di default
+CREATE PROCEDURE set_tecnico(ID_rc INTEGER UNSIGNED, ID_tc INTEGER UNSIGNED)
+BEGIN
+    IF (SELECT ID_tecnico
+    FROM richiesta_acquisto
+    WHERE ID = ID_rc) IS NULL THEN
+        UPDATE richiesta_acquisto
+        SET ID_tecnico = ID_tc
+        WHERE ID = ID_rc;
+    END IF;
+END$$
 
-**Raccomandazioni finali**
+DELIMITER ;
+```
 
-- Questo documento è un modello che spero possa esservi utile per scrivere la documentazione finale del vostro progetto di Laboratorio di Basi di Dati.
+Esempio implementazione
 
-- Cercate di includere tutto il codice SQL nella documentazione, come indicato in questo modello, per facilitarne la correzione. Potete comunque allegare alla documentazione anche il *dump* del vostro database o qualsiasi altro elemento che ritenete utile ai fini della valutazione.
+```sql
+CALL set_tecnico(7,13);
+```
 
-- Ricordate che la documentazione deve essere consegnata, anche per email, almeno *una settimana prima* della data prevista per l'appello d'esame. Eventuali eccezioni a questa regola potranno essere concordate col docente.
+#### [Funzionalità 3](src/procedure/.sql)
+
+> Approvazione del prodotto candidato relativo a una richiesta di acquisto
+
+```sql
+DROP PROCEDURE IF EXISTS insert_valutazione;
+
+DELIMITER $$
+CREATE PROCEDURE insert_valutazione(
+    ID_prod INTEGER UNSIGNED,
+    ID_ord INTEGER UNSIGNED,
+    ID_rc INTEGER UNSIGNED,
+    de ENUM('approvato', 'rifiutato'),
+    mot TEXT
+)
+BEGIN
+    -- update se esiste la valutazione e non è stata presa una decisione 
+    IF EXISTS(SELECT ID_val
+        FROM valutazione
+        WHERE ID_prodotto_candidato = ID_prod
+        AND ID_ordinante = ID_ord
+        AND ID_richiesta_acquisto = ID_rc
+        AND decisione IS NULL
+    ) AND THEN
+        UPDATE valutazione
+        SET decisione = de
+        WHERE ID = ID_val;
+    -- insert se non esiste già
+    ELSEIF EXISTS (SELECT * 
+        FROM richiesta_relativo_prodotto 
+        WHERE ID_richiesta_acquisto = ID_rc
+        AND ID_prodotto_candidato = ID_prod
+    ) AND EXISTS (SELECT *
+        FROM richiesta_acquisto
+        WHERE ID_ordinante = ID_ord
+        AND ID = ID_rc
+    )THEN
+        IF(de = 'approvato') THEN
+            INSERT INTO valutazione(ID_prodotto_candidato,ID_ordinante,ID_richiesta_acquisto,decisione)
+            VALUES  (ID_prod, ID_ord, ID_rc, de);
+        ELSEIF (de = 'rifiutato') THEN
+            INSERT INTO valutazione(ID_prodotto_candidato,ID_ordinante,ID_richiesta_acquisto,decisione,motivazione)
+            VALUES  (ID_prod, ID_ord, ID_rc, de, mot);
+        END IF;
+    END IF;
+END$$
+DELIMITER ;
+```
+
+Esempio implementazione
+
+```sql
+CALL insert_valutazione(31,12,5,'approvato',NULL);
+```
+
+#### [Funzionalità 4](src/procedure/.sql)
+
+> Eliminazione di una richiesta di acquisto dal sistema
+
+```sql
+DROP PROCEDURE IF EXISTS delete_richiesta;
+
+DELIMITER $$
+CREATE PROCEDURE delete_richiesta(ID_rc INTEGER UNSIGNED)
+BEGIN
+    DELETE FROM richiesta_acquisto
+    WHERE ID = ID_rc;
+ENd$$
+
+DELIMITER ;
+```
+
+Esempio implementazione
+
+```sql
+CALL delete_richiesta(18);
+```
+
+#### [Funzionalità 5](src/procedure/.sql)
+
+> Estrazione lista delle richieste di acquisto in corso (non chiuse) di un determinato ordinante, aventi un prodotto candidato associato ma non ancora approvato o respinto
+
+```sql
+DROP PROCEDURE IF EXISTS list_rc_waiting_for_approve;
+
+DELIMITER $$
+CREATE PROCEDURE list_rc_waiting_for_approve()
+BEGIN
+    SELECT rc.*
+    FROM richiesta_acquisto rc
+    JOIN richiesta_relativo_prodotto rcp ON rc.ID = rcp.ID_richiesta_acquisto
+    JOIN valutazione val ON rc.ID = val.ID_richiesta_acquisto 
+        AND rcp.ID_prodotto_candidato = val.ID_prodotto_candidato
+    WHERE rc.esito = 'in corso'
+        AND val.decisione IS NULL;
+END$$
+```
+
+Esempio implementazione
+
+```sql
+CALL list_rc_waiting_for_approve();
+```
+
+#### [Funzionalità 6](src/procedure/.sql)
+
+> Estrazione lista delle richieste di acquisto non ancora assegnate ad alcun tecnico
+
+```sql
+DROP PROCEDURE IF EXISTS rc_without_tecnico;
+
+DELIMITER $$
+CREATE PROCEDURE rc_without_tecnico()
+BEGIN
+    SELECT rc.*
+    FROM richiesta_acquisto rc
+    WHERE rc.ID_tecnico IS NULL;
+END$$
+DELIMITER ;
+```
+
+Esempio implementazione
+
+```sql
+CALL rc_without_tecnico();
+```
+
+#### [Funzionalità 7](src/procedure/.sql)
+
+> Estrazione lista delle richieste di acquisto associate a un determinato tecnico con prodotto accettato ma non ancora ordinato
+
+```sql
+DROP PROCEDURE IF EXISTS rc_approved_waiting;
+
+DELIMITER $$
+CREATE PROCEDURE rc_approved_waiting(ID_tc INTEGER UNSIGNED)
+BEGIN
+    SELECT rc.*
+    FROM richiesta_acquisto rc
+    JOIN richiesta_relativo_prodotto rcp ON rc.ID = rcp.ID_richiesta_acquisto
+    JOIN valutazione val ON rc.ID = val.ID_richiesta_acquisto 
+        AND rcp.ID_prodotto_candidato = val.ID_prodotto_candidato
+    WHERE rc.ID_tecnico = ID_tc
+        AND val.decisione = 'approvato'
+        AND ordinazione = 0;
+END$$
+DELIMITER ;
+```
+
+Esempio implementazione
+
+```sql
+CALL rc_approved_waiting(9);
+```
+
+#### [Funzionalità 8](src/procedure/.sql)
+
+> Estrazione di tutti i dettagli di una richiesta di acquisto (richiesta iniziale, eventuale prodotto candidato, approvazione/rifiuto dell'ordinante con relativa motivazione)
+
+```sql
+DROP PROCEDURE IF EXISTS rc_details;
+
+DELIMITER $$
+CREATE PROCEDURE rc_details(ID_rc INTEGER UNSIGNED)
+BEGIN
+    SELECT rc.*, car.ID AS ID_caratteristica, car.nome, rcc.valore, 
+        prod.ID AS ID_prodotto, prod.nome, val.decisione, val.motivazione
+    FROM richiesta_acquisto rc
+    LEFT JOIN richiesta_info_caratteristiche rcc ON rcc.ID_richiesta_acquisto = ID_rc
+    LEFT JOIN caratteristica car ON rcc.ID_caratteristica = car.ID
+    LEFT JOIN richiesta_relativo_prodotto rcp ON rcp.ID_richiesta_acquisto = ID_rc
+    LEFT JOIN prodotto_candidato prod ON prod.ID = rcp.ID_prodotto_candidato
+    LEFT JOIN valutazione val ON val.ID_richiesta_acquisto = ID_rc
+        AND val.ID_prodotto_candidato = prod.ID
+    WHERE rc.ID = ID_rc;
+END$$
+DELIMITER ;
+```
+
+Esempio implementazione
+
+```sql
+CALL rc_details(14);
+```
+
+#### [Funzionalità 9](src/procedure/.sql)
+
+> Conteggio richieste di acquisto gestite globalmente da un determinato tecnico
+
+
+```sql
+DROP PROCEDURE IF EXISTS num_rc_from_tecnico;
+
+DELIMITER $$
+CREATE PROCEDURE num_rc_from_tecnico(ID_tc INTEGER UNSIGNED)
+BEGIN
+    SELECT COUNT(*)
+    FROM richiesta_acquisto
+    WHERE ID_tecnico = ID_tc;
+END$$
+DELIMITER ;
+```
+
+Esempio implementazione
+
+```sql
+CALL num_rc_from_tecnico(6);
+```
+
+#### [Funzionalità 10](src/procedure/.sql)
+
+> Calcolo somma totale spesa da un determinato ordinante in un anno solare (suggerimento: si tratta dei prezzi dei prodotti candidati approvati, ordinati e con ordine chiuso con accettazione)
+
+```sql
+DROP PROCEDURE IF EXISTS tot_spesa_ordinante;
+DELIMITER $$
+CREATE PROCEDURE tot_spesa_ordinante(
+    ID_ord INTEGER UNSIGNED,
+    anno INTEGER UNSIGNED
+)
+BEGIN
+    SELECT SUM(prod.prezzo)
+    FROM ordinante ord
+    JOIN richiesta_acquisto rc ON rc.ID_ordinante = ord.ID
+    JOIN richiesta_relativo_prodotto rcp ON rcp.ID_richiesta_acquisto = rc.ID
+    JOIN prodotto_candidato prod ON prod.ID = rcp.ID_prodotto_candidato
+    JOIN valutazione val ON rc.ID = val.ID_richiesta_acquisto 
+        AND rcp.ID_prodotto_candidato = val.ID_prodotto_candidato
+    WHERE ord.ID = ID_ord
+        AND val.decisione = 'approvato'
+        AND YEAR(rc.tempo) = anno
+        AND rc.esito = 'accettato';
+END$$
+DELIMITER ;
+```
+
+Esempio implementazione
+
+```sql
+CALL tot_spesa_ordinante(2,2024)
+```
+
+#### [Funzionalità 11](src/procedure/.sql)
+
+> Calcolo tempo medio di evasione di un ordine da parte dei tecnici (il tempo di evasione è dato dalla differenza tra il momento in cui viene inserita una richiesta di acquisto e quello in cui il prodotto viene ordinato. suggerimento: questo vuol dire che dovete prevedere alcuni timestamp nel database che saranno impostati nei momenti opportuni...)
+
+```sql
+DROP PROCEDURE IF EXISTS avrage_time_evasion;
+
+DELIMITER $$
+CREATE PROCEDURE avrage_time_evasion()
+BEGIN
+    SELECT AVG(TIMESTAMPDIFF(MINUTE, rc.tempo, val.tempo))
+    FROM richiesta_acquisto rc
+    JOIN valutazione val ON val.ID_richiesta_acquisto = rc.ID;
+END $$
+DELIMITER ;
+```
+
+Esempio implementazione
+
+```sql
+CALL avrage_time_evasion();
+```
+
