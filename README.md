@@ -9,20 +9,27 @@
 ## Analisi dei requisiti
 
 1. L'ordinante effettua una richiesta d'acquisto specificando una o più categorie, e inserendo dei valori a tutte le caratteristiche relative alle categorie selezionate inserendo 'indifferente' se non si vuole specificare un valore, e delle note se necessita di specificare altro
-2. Ad ogni rischiesta verrà assegnato un tecnico (incaricato) che potrà valutarla in base ai dati inseriti nel punto 1 e sceglierà al di fuori del sistema un prodotto da candidare alla richiesta
-3. L'ordinante prenderà in visione in prodotto candidato e deciderà se respingerlo, ripartendo dal punto 2, o accettarlo
+2. Ad ogni rischiesta verrà assegnato un tecnico incaricato che potrà valutarla in base ai dati inseriti nel punto 1 e sceglierà al di fuori del sistema un prodotto da candidare alla richiesta
+3. L'ordinante prenderà in visione il prodotto candidato e deciderà se respingerlo, ripartendo dal punto 2, o accettarlo
 4. In caso di ordine accettato il personale tecnico procederà all'aquisto del prodotto e alla consegna
 5. Una volta che il prodotto viene consegnato l'ordinate chiuderà la relativa richiesta d'acquisto indicando se il prodotto è stato accettato, respinto perché non conforme oppure respinto perché non funzionante
 
 ### Scelte progettuali 
 
-- discutere le scelte progettuali e disambuguare eventuali elementi ambugui
+- la richiesta d'acquisto ha una sola categoria, le categorie hanno però struttura ad albero (se selezioni una categoria verranno considerate anche tutte le categorie padre imparentate)
+- le categorie vengono inserite con valore indifferente automaticamente alla creazione della richiesta d'acquisto, e in seguito si possono andare a modificare i singoli valori dove necessario
+- non può essere candidato più volte lo stesso prodotto in una singola richiesta d'acquisto
+- a seguito della valutazione l'intero processo di acquisto e consegna verrà gestito da un singolo attributo della valutazione che indica se il prodotto è stato o meno ordinato
+- la valutazione non presenta attributo chiave in quanto è definito dalla relazione con la richiesta d'acquisto e con il prodotto candidato
 
 ## Progettazione concettuale
 
 <img src="assets\ER_concettuale.jpg">
 
-- Commentate gli elementi non visibili nella figura (ad esempio il contenuto degli attributi composti) nonché le scelte/assunzioni che vi hanno portato a creare determinate strutture, se lo ritenete opportuno.
+- La categoria in questo caso comprende anche le categorie padre (ES. se si sceglie la categoria *laptop* si sottointende che si è scelta anche la categoria *elettronica*). Se si vuole inserire più di una categoria si usa una categoria più generica (ES. se si vuole scegliere sia la categoria *laptop* che la categoria *telefono* si sceglie la categoria *elettronica* che le comprende entrambe). Non si possono scegliere due categorie diametralmente opposte (ES. *laptop* e *scarpe*). Questo punto verrà implementato meglio dopo la ristrutturazione ed ottimizazzione del modello. 
+- amministratore e persona sono entità superflue, utilizzate puramente a scopo di chiarezza in fase di creazione del modello, verranno rimosse in seguito
+- decisione->valutazione è un enumerativo che però durante la fase di creazione della valutazione avrà valore nulla in quanto spetta all'ordinante decidere se sarà approvata o rifiutata
+- 
 
 ### Formalizzazione dei vincoli non esprimibili nel modello ER
 
@@ -56,10 +63,9 @@
 
 ### Implementazione del modello relazionale
 
-- Inserite qui lo *script SQL* con cui **creare il database** il cui modello relazionale è stato illustrato nella sezione precedente. Ricordate di includere nel codice tutti
-  i vincoli che possono essere espressi nel DDL. 
-
-- Potete opzionalmente fornire anche uno script separato di popolamento (INSERT) del database su cui basare i test delle query descritte nella sezione successiva.
+- Per la creazione e il popolamento del database, utilizzare gli script [struttura](src/structure.sql) e [dati](src/dati.sql).
+- Alternativamente si può utilizzare il file di [dump](src/dump/dump.sql), il quale contiene la struttura, tutti i dati, e le procedure utilizzate in seguito.
+- Tutti gli script utilizzati sono inoltre presenti nella directory [src](src/).
 
 ### Implementazione dei vincoli
 
