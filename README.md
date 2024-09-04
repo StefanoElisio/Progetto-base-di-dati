@@ -224,7 +224,7 @@ Esempio implementazione
 CALL set_tecnico(7,13);
 ```
 
-#### [Funzionalità 3](src/procedure/.sql)
+#### [Funzionalità 3](src/procedure/inserimento_valutazione.sql)
 
 > Approvazione del prodotto candidato relativo a una richiesta di acquisto
 
@@ -279,7 +279,7 @@ Esempio implementazione
 CALL insert_valutazione(31,12,5,'approvato',NULL);
 ```
 
-#### [Funzionalità 4](src/procedure/.sql)
+#### [Funzionalità 4](src/procedure/rimozione_richiesta_d'acquisto.sql)
 
 > Eliminazione di una richiesta di acquisto dal sistema
 
@@ -302,7 +302,7 @@ Esempio implementazione
 CALL delete_richiesta(18);
 ```
 
-#### [Funzionalità 5](src/procedure/.sql)
+#### [Funzionalità 5](src/procedure/lista_richieste_in_approvazione.sql)
 
 > Estrazione lista delle richieste di acquisto in corso (non chiuse) di un determinato ordinante, aventi un prodotto candidato associato ma non ancora approvato o respinto
 
@@ -328,7 +328,7 @@ Esempio implementazione
 CALL list_rc_waiting_for_approve();
 ```
 
-#### [Funzionalità 6](src/procedure/.sql)
+#### [Funzionalità 6](src/procedure/lista_richieste_senza_tecnico.sql)
 
 > Estrazione lista delle richieste di acquisto non ancora assegnate ad alcun tecnico
 
@@ -351,7 +351,7 @@ Esempio implementazione
 CALL rc_without_tecnico();
 ```
 
-#### [Funzionalità 7](src/procedure/.sql)
+#### [Funzionalità 7](src/procedure/lista_richieste_approvate_in_attesa.sql)
 
 > Estrazione lista delle richieste di acquisto associate a un determinato tecnico con prodotto accettato ma non ancora ordinato
 
@@ -379,7 +379,7 @@ Esempio implementazione
 CALL rc_approved_waiting(9);
 ```
 
-#### [Funzionalità 8](src/procedure/.sql)
+#### [Funzionalità 8](src/procedure/dettagli_richiesta.sql)
 
 > Estrazione di tutti i dettagli di una richiesta di acquisto (richiesta iniziale, eventuale prodotto candidato, approvazione/rifiuto dell'ordinante con relativa motivazione)
 
@@ -409,7 +409,7 @@ Esempio implementazione
 CALL rc_details(14);
 ```
 
-#### [Funzionalità 9](src/procedure/.sql)
+#### [Funzionalità 9](src/procedure/numero_richieste_gestite.sql)
 
 > Conteggio richieste di acquisto gestite globalmente da un determinato tecnico
 
@@ -433,7 +433,7 @@ Esempio implementazione
 CALL num_rc_from_tecnico(6);
 ```
 
-#### [Funzionalità 10](src/procedure/.sql)
+#### [Funzionalità 10](src/procedure/spesa_totale_ordinante.sql)
 
 > Calcolo somma totale spesa da un determinato ordinante in un anno solare (suggerimento: si tratta dei prezzi dei prodotti candidati approvati, ordinati e con ordine chiuso con accettazione)
 
@@ -466,7 +466,7 @@ Esempio implementazione
 CALL tot_spesa_ordinante(2,2024)
 ```
 
-#### [Funzionalità 11](src/procedure/.sql)
+#### [Funzionalità 11](src/procedure/tempo_medio_evasione.sql)
 
 > Calcolo tempo medio di evasione di un ordine da parte dei tecnici (il tempo di evasione è dato dalla differenza tra il momento in cui viene inserita una richiesta di acquisto e quello in cui il prodotto viene ordinato. suggerimento: questo vuol dire che dovete prevedere alcuni timestamp nel database che saranno impostati nei momenti opportuni...)
 
